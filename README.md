@@ -27,7 +27,7 @@ This API allows for the optimization of images and uses FastAPI and Pillow for i
 1. Clone the repository:
    ```bash
    git clone https://github.com/neec0o/imageOptimizer.git
-   cd image-optimization-api
+   cd imageOptimizer
 
   - Install requirements: 
    pip install -r requirements.txt
