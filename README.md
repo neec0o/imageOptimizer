@@ -29,9 +29,9 @@ This API allows for the optimization of images and uses FastAPI and Pillow for i
    git clone https://github.com/neec0o/imageOptimizer.git
    cd image-optimization-api
 
-  - Install requirements
+  - Install requirements: 
    pip install -r requirements.txt
 
-   - Start the Server
+   - Start the Server: 
    uvicorn main:app --reload
 
