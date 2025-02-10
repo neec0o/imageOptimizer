@@ -28,7 +28,5 @@
    - [ ] Add usage instructions and examples
 
 6. **Deployment**
-   - [ ] Determine deployment strategy for production environment (e.g., AWS, Heroku)
+   - [ ] Determine deployment strategy for production environment
    - [ ] Set up CI/CD pipeline
-
-Good luck with your project! If you need further assistance, feel free to ask!
