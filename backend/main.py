@@ -1,34 +1,51 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Depends, Query, Cookie
 import shutil
-import os
+import uuid
 from pathlib import Path
-from image_processing import optimize_image
+from fastapi.responses import FileResponse, JSONResponse
+from image_processing import optimize_image, create_zip
 
-# FastAPI App starten
 app = FastAPI()
 
-# Verzeichnisse für Uploads & optimierte Bilder
-UPLOAD_DIR = Path("temp")
-OPTIMIZED_DIR = Path("static")
-UPLOAD_DIR.mkdir(exist_ok=True)
-OPTIMIZED_DIR.mkdir(exist_ok=True)
+#Main Ordner für den ganzen Bumms
+TEMP_DIR = Path("temp")
+TEMP_DIR.mkdir(exist_ok=True)
+
+def get_user_session(session_id: str = Cookie(default=None)):
+    #Session ID abfrühstücken
+    if session_id is None:
+        new_session_id = str(uuid.uuid4())  # Zufällige UUID generieren
+        return new_session_id
+    return session_id
 
 @app.post("/upload")
-async def upload_and_optimize(file: UploadFile = File(...)):
-    """Speichert ein Bild, optimiert es und gibt den neuen Dateipfad zurück"""
-    file_location = UPLOAD_DIR / file.filename
-    optimized_location = OPTIMIZED_DIR / file.filename
-
-    # Datei speichern
+async def upload_image(
+    file: UploadFile = File(...),
+    max_width: int = Query(1920),
+    max_height: int = Query(1080),
+    quality: int = Query(80),
+    session_id: str = Depends(get_user_session)
+):
+    # Datei speichern und umbennen mit Sessio ID
+    user_folder = TEMP_DIR / session_id
+    user_folder.mkdir(exist_ok=True)
+    filename = file.filename.rsplit(".", 1) 
+    new_filename = f"{filename[0]}_{session_id}.{filename[1]}" if len(filename) > 1 else f"{file.filename}_{session_id}"
+    file_location = user_folder / new_filename
+    
     with file_location.open("wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    # Bild optimieren
-    optimize_image(file_location, optimized_location)
+    # Bild optimieren aus der image_processing datei
+    optimize_image(file_location, max_width, max_height, quality)
 
-    # Originalbild löschen
-    file_location.unlink()
+    return JSONResponse(content={"filename": new_filename, "session_id": session_id},
+                        headers={"Set-Cookie": f"session_id={session_id}; Path=/; HttpOnly"})
 
-    return {"filename": file.filename, "optimized_path": str(optimized_location)}
+@app.get("/download")
+async def download_zip(session_id: str = Depends(get_user_session)):
+    #Zip erstellen und Pfad returnen
+    user_folder = TEMP_DIR / session_id
+    zip_path = create_zip(user_folder, session_id)
 
-# Starte den Server mit: uvicorn main:app --reload
+    return FileResponse(zip_path, filename=f"{session_id}.zip", media_type="application/zip")
