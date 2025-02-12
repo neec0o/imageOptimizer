@@ -1,17 +1,25 @@
 from PIL import Image
+import zipfile
 from pathlib import Path
 
-def optimize_image(image_path: Path, output_path: Path, max_width: int = 800, quality: int = 70):
-    """Skaliert und optimiert ein Bild für das Web."""
+def optimize_image(image_path: Path, max_width: int, max_height: int, quality: int):
+    #Bild mit User Werten anpassen
     with Image.open(image_path) as img:
-        # Originalmaße abrufen
-        width, height = img.size
+        original_width, original_height = img.size
 
-        # Verhältnis berechnen und neue Größe setzen
-        if width > max_width:
-            ratio = max_width / width
-            new_size = (max_width, int(height * ratio))
-            img = img.resize(new_size, Image.Resampling.LANCZOS)
+        # Berechne neue Größe, behalte Aspect Ratio
+        if original_width > max_width or original_height > max_height:
+            img.thumbnail((max_width, max_height)) # Image skalieren
 
-        # Optimiertes Bild speichern
-        img.save(output_path, quality=quality, optimize=True)
+        # Speichere das optimierte Image
+        img.save(image_path, "JPEG", quality=quality)
+
+def create_zip(folder_path: Path, session_id: str) -> Path:
+    zip_path = folder_path / f"{session_id}.zip"
+
+    with zipfile.ZipFile(zip_path, "w") as zipf:
+        for file in folder_path.iterdir():
+            if file.suffix.lower() in [".jpg", ".jpeg", ".png"]:
+                zipf.write(file, arcname=file.name)
+
+    return zip_path
