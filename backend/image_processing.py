@@ -10,9 +10,11 @@ def optimize_image(image_path: Path, max_width: int, max_height: int, quality: i
         # Berechne neue Größe, behalte Aspect Ratio
         if original_width > max_width or original_height > max_height:
             img.thumbnail((max_width, max_height)) # Image skalieren
-
+		# Entferne Meta-Daten (EXIF)
+        img_without_exif = Image.new("RGB", img.size)
+        img_without_exif.paste(img)
         # Speichere das optimierte Image
-        img.save(image_path, "JPEG", quality=quality)
+        img_without_exif.save(image_path, img.format, quality=quality)
 
 def create_zip(folder_path: Path, session_id: str) -> Path:
     zip_path = folder_path / f"{session_id}.zip"
