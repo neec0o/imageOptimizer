@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+pillow
+python-jose[cryptography]
+passlib[bcrypt]
+sqlite3

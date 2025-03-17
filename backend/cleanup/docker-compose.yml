@@ -1,0 +1,9 @@
+services:
+  cleanup:
+    image: imageOptim_api
+    container_name: cleanup
+    entrypoint: ["python", "cleanup.py"]
+    networks:
+      - internal
+    depends_on:
+      - backend

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bildoptimierung</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="login-container">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Benutzername">
+        <input type="password" id="password" placeholder="Passwort">
+        <button onclick="login()">Einloggen</button>
+        <p id="login-message"></p>
+    </div>
+
+    <div id="upload-container" style="display:none;">
+        <h2>Bild hochladen</h2>
+        <input type="file" id="fileInput" multiple>
+        <input type="number" id="maxWidth" placeholder="Max Breite" value="1920">
+        <input type="number" id="maxHeight" placeholder="Max Höhe" value="1080">
+        <input type="number" id="quality" placeholder="Qualität (0-100)" value="80">
+        <button onclick="uploadImages()">Hochladen</button>
+        <p id="upload-message"></p>
+
+        <h3>Download</h3>
+        <button onclick="downloadZip()">Optimierte Bilder herunterladen</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -34,4 +34,17 @@ This API allows for the optimization of images and uses FastAPI and Pillow for i
 
    - Start the Server: 
    uvicorn main:app --reload
+   ```
+## Docker Init
 
+   ```bash
+      docker network create web
+      docker run -d --name traefik --network web -p 80:80 -p 443:443 \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      -v $PWD/traefik.toml:/traefik.toml \
+      traefik:v2.9
+   ```
+
+   ```bash
+      docker-compose up -d --build
+   ```
