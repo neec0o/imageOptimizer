@@ -19,6 +19,17 @@ def create_user_table():
             hashed_password TEXT NOT NULL
         )
     """)
+    cursor = conn.execute("SELECT username FROM users WHERE username = ?", ("neeco",))
+    user_exists = cursor.fetchone()
+    
+    if not user_exists:
+        # Testbenutzer erstellen
+        hashed_password = pwd_context.hash("testuserpa$$")
+        conn.execute(
+            "INSERT INTO users (username, hashed_password) VALUES (?, ?)",
+            ("neeco", hashed_password)
+        )
+    
     conn.commit()
     conn.close()
 
